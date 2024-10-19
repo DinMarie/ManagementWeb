@@ -44,7 +44,7 @@ namespace Management.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Group grp)
         {
-            string apiUrl = "https://localhost:7074/api/group";
+            string apiUrl = "https://localhost:7074/api/group/Add";
             using (HttpClient client = new HttpClient())
             {
                 StringContent content = new StringContent(JsonConvert.SerializeObject(grp), Encoding.UTF8, "application/json");
@@ -68,16 +68,22 @@ namespace Management.Controllers
         // POST: GroupController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        [HttpPost]
+        public async Task<ActionResult> Edit(Group grp)
         {
-            try
+            string apiUrl = "https://localhost:7074/api/group/Update";
+
+            using (HttpClient client = new HttpClient())
             {
-                return RedirectToAction(nameof(Index));
+                StringContent content = new StringContent(JsonConvert.SerializeObject(grp), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PatchAsync(apiUrl, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return View();
         }
 
         // GET: GroupController/Delete/5
